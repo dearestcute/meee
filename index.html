@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil Pengembara - Premium</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Noto Sans (Body) & Cinzel (Headings) -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Noto+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        /* === VARIABEL WARNA GENSHIN PREMIUM === */
+        :root {
+            --gi-gold: #e8c373;      
+            --gi-gold-light: #fef0d8;
+            --gi-dark: #072226;
+        }
+
+        body {
+            font-family: 'Noto Sans', sans-serif;
+            background-color: var(--gi-dark);
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4, h5, .font-cinzel {
+            font-family: 'Cinzel', serif;
+        }
+
+        /* === BACKGROUND MONDSTADT FIXED === */
+        .fixed-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background-image: url('https://i.ibb.co.com/Tqhq7dD1/moon-over-mondstadt-by-sevenics-dend7ok.jpg');
+            background-size: cover;
+            background-position: center;
+            z-index: -2;
+            /* Memberikan efek redup agar konten elegan ala Squarespace menonjol */
+            filter: brightness(0.4) contrast(1.1); 
+        }
+
+        /* === SCROLL ANIMATIONS (Reveal pada saat di-scroll) === */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        /* Delay untuk elemen yang berurutan */
+        .delay-100 { transition-delay: 100ms; }
+        .delay-200 { transition-delay: 200ms; }
+        .delay-300 { transition-delay: 300ms; }
+
+        /* === GLASSMORPHISM & ORNAMENTS === */
+        .premium-glass {
+            background: rgba(7, 34, 38, 0.45);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-top: 1px solid rgba(212, 175, 55, 0.2);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .gold-accent-line {
+            width: 1px;
+            height: 100px;
+            background: linear-gradient(to bottom, transparent, var(--gi-gold), transparent);
+            margin: 0 auto;
+        }
+
+        /* === FOTO PROFIL === */
+        .profile-img-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            aspect-ratio: 3/4; /* Rasio potret elegan */
+            margin: 0 auto;
+        }
+        
+        .profile-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 4px;
+            /* Filter untuk menyatu dengan tema */
+            filter: brightness(0.9) contrast(1.1);
+        }
+
+        .profile-frame {
+            position: absolute;
+            top: -15px; left: -15px; right: 15px; bottom: 15px;
+            border: 1px solid var(--gi-gold);
+            z-index: -1;
+            transition: transform 0.5s ease;
+        }
+        .profile-img-container:hover .profile-frame {
+            transform: translate(10px, -10px);
+        }
+
+        /* === MUSIK PLAYER === */
+        .music-player-btn {
+            width: 80px; height: 80px;
+            border-radius: 50%;
+            border: 1px solid var(--gi-gold);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; color: var(--gi-gold-light);
+            background: transparent;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.5s ease;
+        }
+        .music-player-btn::before {
+            content: ''; position: absolute;
+            top: 5px; left: 5px; right: 5px; bottom: 5px;
+            border-radius: 50%; border: 1px dashed rgba(212, 175, 55, 0.5);
+            transition: transform 10s linear infinite;
+        }
+        .music-player-btn:hover {
+            background: rgba(212, 175, 55, 0.1);
+            transform: scale(1.05);
+        }
+        .music-player-btn.playing::before {
+            animation: spin 5s linear infinite;
+            border-style: solid; border-color: var(--gi-gold);
+        }
+
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* === PARTIKEL ANEMO === */
+        .particle {
+            position: fixed; background: #fff; border-radius: 50%;
+            box-shadow: 0 0 10px #fff, 0 0 20px #78ffcd;
+            pointer-events: none; z-index: -1; opacity: 0;
+            animation: floatUp linear infinite;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) scale(0); opacity: 0; }
+            20% { opacity: 0.4; }
+            80% { opacity: 0.4; }
+            100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+        }
+
+        /* Animasi Panah Scroll */
+        @keyframes bounce-slow {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(15px); }
+        }
+        .animate-bounce-slow { animation: bounce-slow 2s infinite; }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Latar Belakang Tetap -->
+    <div class="fixed-bg"></div>
+    <div id="particles-container"></div>
+
+    <!-- ==============================================
+         SECTION 1: HERO (Layar Penuh, Elegan)
+         ============================================== -->
+    <section class="relative min-h-screen flex flex-col items-center justify-center text-center px-6">
+        <div class="reveal">
+            <p class="font-cinzel text-[#d4af37] tracking-[0.4em] text-sm mb-6 uppercase">
+                ✧ Pengembara Teyvat ✧
+            </p>
+            <h1 class="font-cinzel text-5xl md:text-7xl lg:text-8xl font-medium text-white tracking-widest uppercase mb-8" style="text-shadow: 0 10px 30px rgba(0,0,0,0.8);">
+                [Leon]
+            </h1>
+            
+            <div class="flex items-center justify-center space-x-4 opacity-80">
+                <div class="w-12 h-[1px] bg-[#d4af37]"></div>
+                <i class="fa-brands fa-envira text-[#78ffcd] text-xl drop-shadow-[0_0_10px_#78ffcd]"></i>
+                <span class="font-cinzel tracking-widest text-sm text-[#f9f1dc]">[Anemo]</span>
+                <div class="w-12 h-[1px] bg-[#d4af37]"></div>
+            </div>
+        </div>
+
+        <!-- Indikator Scroll -->
+        <div class="absolute bottom-12 left-1/2 transform -translate-x-1/2 flex flex-col items-center animate-bounce-slow opacity-60">
+            <span class="text-[10px] tracking-widest uppercase mb-3 text-[#d4af37]">Jelajahi</span>
+            <div class="w-[1px] h-12 bg-gradient-to-b from-[#d4af37] to-transparent"></div>
+        </div>
+    </section>
+
+
+    <!-- ==============================================
+         SECTION 2: ABOUT ME (Layout Asimetris)
+         ============================================== -->
+    <section class="relative premium-glass py-24 lg:py-32">
+        <div class="max-w-7xl mx-auto px-6 lg:px-12 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            
+            <!-- Kolom Foto (Kiri) -->
+            <div class="reveal order-2 lg:order-1">
+                <div class="profile-img-container">
+                    <div class="profile-frame"></div>
+                    <!-- FOTO KAMU DI SINI (Disarankan foto rasio potret/berdiri) -->
+                    <img src="https://i.ibb.co.com/bMzPY9s7/Xiang-Lin0201-pindown-io-1786903432.jpg" 
+                         alt="Portrait" 
+                         class="profile-img shadow-2xl">
+                </div>
+            </div>
+
+            <!-- Kolom Teks (Kanan) -->
+            <div class="reveal delay-200 order-1 lg:order-2">
+                <h2 class="font-cinzel text-3xl lg:text-5xl text-white mb-6">THE STORY OF A TRAVELER </h2>
+                <div class="w-16 h-[1px] bg-[#d4af37] mb-8"></div>
+                
+                <!-- ISI CERITAMU DI SINI -->
+                <div class="space-y-6 text-gray-300 font-light leading-relaxed text-lg text-justify">
+                    <p>
+                        [Halo! Tuliskan kisahmu di sini. Di Squarespace, gaya penulisan biasanya memiliki banyak ruang untuk bernafas. Gunakan paragraf yang tidak terlalu panjang.]
+                    </p>
+                    <p>
+                        [Ceritakan apa yang membuatmu unik. Apakah kamu suka bereksplorasi layaknya angin di Mondstadt, atau memiliki hobi yang menarik?]
+                    </p>
+                </div>
+
+                <!-- Quote Box Minimalis -->
+                <div class="mt-12 pl-6 border-l border-[#d4af37]">
+                    <p class="font-cinzel text-xl italic text-[#f9f1dc] leading-relaxed">
+                        "[Tuliskan sebuah kutipan atau prinsip hidupmu yang menginspirasi di sini.]"
+                    </p>
+                </div>
+            </div>
+            
+        </div>
+    </section>
+
+    <!-- Transisi Visual antar Section -->
+    <div class="w-full flex justify-center my-12">
+        <div class="gold-accent-line reveal"></div>
+    </div>
+
+    <!-- ==============================================
+         SECTION 3: FAVORITE (Matcha)
+         ============================================== -->
+    <section class="relative py-12 lg:py-24">
+        <div class="max-w-7xl mx-auto px-6 lg:px-12 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            
+            <!-- Kolom Teks (Kiri) -->
+            <div class="reveal delay-100 text-right">
+                <h2 class="font-cinzel text-3xl lg:text-5xl text-white mb-6">Cita Rasa Kesukaan</h2>
+                <div class="w-16 h-[1px] bg-[#d4af37] mb-8 ml-auto"></div>
+                
+                <h3 class="font-cinzel text-2xl text-[#d4af37] mb-4">[Sebutkan Menu Matchamu]</h3>
+                <p class="text-gray-300 font-light leading-relaxed text-lg text-right">
+                    [Mengapa kamu menyukai Matcha? Jelaskan dengan kalimat yang puitis atau sederhana. Misalnya: "Perpaduan rasa pahit dan manis yang menenangkan, bagaikan embun pagi di dataran tinggi. Sebuah harmoni sempurna untuk menemani setiap perjalanan."]
+                </p>
+            </div>
+
+            <!-- Kolom Foto Matcha (Kanan) -->
+            <div class="reveal delay-300">
+                <div class="relative w-full aspect-square max-w-[450px] mx-auto overflow-hidden rounded-full border border-gray-800 shadow-[0_0_40px_rgba(0,0,0,0.6)]">
+                    <!-- FOTO MATCHA DI SINI -->
+                    <img src="https://i.ibb.co.com/d47Bs4nj/xlizzybb-pindown-io-1786903607.jpg auto=format&fit=crop&q=80&w=800" 
+                         alt="Matcha" 
+                         class="w-full h-full object-cover hover:scale-105 transition-transform duration-1000 ease-in-out">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Transisi Visual -->
+    <div class="w-full flex justify-center my-12">
+        <div class="gold-accent-line reveal"></div>
+    </div>
+
+    <!-- ==============================================
+         SECTION 4: MUSIC LOUNGE
+         ============================================== -->
+    <section class="relative premium-glass py-24 mb-24">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <div class="reveal">
+                <i class="fa-solid fa-music text-[#d4af37] text-2xl mb-6"></i>
+                <h2 class="font-cinzel text-3xl lg:text-4xl text-white mb-4">Melodi Penyerta</h2>
+                <p class="text-gray-400 font-light mb-12 italic tracking-wide">"[Judul Lagu - Artis]"</p>
+            </div>
+
+            <!-- MP3 AUDIO FILE -->
+            <audio id="bg-audio" loop>
+                <source src="https://dearestcute.github.io/Deareatezra/SpotiDown.App - her - JVKE.mp3" type="audio/mpeg">
+            </audio>
+
+            <div class="reveal delay-200 flex flex-col items-center justify-center">
+                <!-- Tombol Putar Minimalis -->
+                <button id="play-toggle" onclick="toggleAudio()" class="music-player-btn group">
+                    <i class="fa-solid fa-play ml-1 group-hover:text-white transition-colors" id="audio-icon"></i>
+                </button>
+                <span class="text-xs text-gray-500 mt-6 tracking-widest uppercase" id="audio-status">Putar Musik</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==============================================
+         FOOTER
+         ============================================== -->
+    <footer class="text-center py-12 relative z-10">
+        <p class="font-cinzel text-xs text-[#d4af37] tracking-[0.5em] opacity-60">
+            AD ASTRA ABYSSOSQUE
+        </p>
+    </footer>
+
+    <!-- SCRIPT -->
+    <script>
+        // --- 1. Animasi Scroll (Intersection Observer) ---
+        // Ini adalah kunci utama gaya "Squarespace". Elemen akan muncul perlahan saat di-scroll.
+        document.addEventListener("DOMContentLoaded", function() {
+            const reveals = document.querySelectorAll(".reveal");
+            const revealOptions = {
+                threshold: 0.15,
+                rootMargin: "0px 0px -50px 0px"
+            };
+
+            const revealOnScroll = new IntersectionObserver(function(entries, observer) {
+                entries.forEach(entry => {
+                    if (!entry.isIntersecting) return;
+                    entry.target.classList.add("active");
+                    // Optional: Hentikan observasi jika hanya ingin animasi sekali jalan
+                    // observer.unobserve(entry.target);
+                });
+            }, revealOptions);
+
+            reveals.forEach(reveal => {
+                revealOnScroll.observe(reveal);
+            });
+        });
+
+        // --- 2. Pemutar Musik ---
+        const audioEl = document.getElementById('bg-audio');
+        const iconEl = document.getElementById('audio-icon');
+        const btnEl = document.getElementById('play-toggle');
+        const statusEl = document.getElementById('audio-status');
+        let isAudioPlaying = false;
+
+        audioEl.volume = 0.3;
+
+        function toggleAudio() {
+            if (isAudioPlaying) {
+                audioEl.pause();
+                iconEl.classList.replace('fa-pause', 'fa-play');
+                iconEl.classList.add('ml-1'); // menyesuaikan posisi icon play
+                btnEl.classList.remove('playing');
+                statusEl.innerText = "Putar Musik";
+            } else {
+                audioEl.play();
+                iconEl.classList.replace('fa-play', 'fa-pause');
+                iconEl.classList.remove('ml-1');
+                btnEl.classList.add('playing');
+                statusEl.innerText = "Sedang Memutar...";
+            }
+            isAudioPlaying = !isAudioPlaying;
+        }
+
+        // --- 3. Partikel Anemo (Visual Latar Belakang) ---
+        function createParticles() {
+            const container = document.getElementById('particles-container');
+            const particleCount = 20; // Dibuat lebih sedikit agar terlihat elegan/tidak berisik
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                const size = Math.random() * 4 + 1;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${Math.random() * 100}vw`;
+                
+                particle.style.animationDuration = `${Math.random() * 15 + 10}s`;
+                particle.style.animationDelay = `${Math.random() * 10}s`;
+
+                container.appendChild(particle);
+            }
+        }
+        window.onload = createParticles;
+    </script>
+</body>
+</html>
+
+
